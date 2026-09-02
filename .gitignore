@@ -1,0 +1,39 @@
+# Rezultati prevodenja
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+ipch/
+
+# Korisnicke i privremene datoteke Visual Studia
+.vs/
+*.suo
+*.user
+*.sdf
+*.opensdf
+*.opendb
+*.db
+*.VC.db
+*.VC.opendb
+*.ncb
+*.aps
+
+# Medurezultati i rezultati prevodenja
+*.obj
+*.exe
+*.dll
+*.lib
+*.pdb
+*.ilk
+*.idb
+*.pch
+*.ipch
+*.res
+*.tlog
+*.log
+*.lastbuildstate
+*.exp
+*.iobj
+*.ipdb
