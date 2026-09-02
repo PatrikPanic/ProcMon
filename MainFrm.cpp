@@ -35,15 +35,14 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     if (CMDIFrameWndEx::OnCreate(lpCreateStruct) == -1)
         return -1;
 
-    // Djeca MDI okvira prikazuju se kao kartice.
-    // Krizic se prikazuje na aktivnoj kartici. Zatvaranje prozora s popisom
-    // procesa svejedno nije moguce jer ga odbija CChildFrame::OnClose.
+    // Gumb za zatvaranje kartice je iskljucen jer su sve tri kartice stalno
+    // otvorene.
     CMDITabInfo tabInfo;
     tabInfo.m_style                  = CMFCTabCtrl::STYLE_3D_ONENOTE;
-    tabInfo.m_bActiveTabCloseButton  = TRUE;
+    tabInfo.m_bActiveTabCloseButton  = FALSE;
     tabInfo.m_bTabIcons              = FALSE;
     tabInfo.m_bAutoColor             = TRUE;
-    tabInfo.m_bDocumentMenu          = TRUE;
+    tabInfo.m_bDocumentMenu          = FALSE;
     EnableMDITabbedGroups(TRUE, tabInfo);
 
     CreateRibbon();
@@ -59,9 +58,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerOffice2007));
     CMFCVisualManagerOffice2007::SetStyle(CMFCVisualManagerOffice2007::Office2007_LunaBlue);
 
-    // Mjerac vremena za osvjezavanje u stvarnom vremenu drzi glavni okvir, a ne
-    // pojedini pogled, pa osvjezavanje radi neovisno o tome koji su prozori
-    // otvoreni.
+    // Mjerac vremena drzi glavni okvir, a ne pojedini pogled, pa osvjezavanje
+    // radi neovisno o tome koja je kartica prikazana.
     SetTimer(timerRefresh, refreshIntervalMs, NULL);
 
     return 0;
@@ -90,32 +88,24 @@ void CMainFrame::CreateRibbon()
     m_wndRibbonBar.Create(this);
     m_wndRibbonBar.SetWindows7Look(FALSE);
 
-    // Kategorija bez slikovnih resursa - gumbi su tekstualni.
+    // Kategorija bez slikovnih resursa, gumbi su tekstualni.
     CMFCRibbonCategory* pCategory =
         m_wndRibbonBar.AddCategory(CSysUtil::LoadStr(IDS_RIBBON_CATEGORY), 0, 0);
 
-    // Ploca s naredbama za osvjezavanje
     CMFCRibbonPanel* pPanelRefresh = pCategory->AddPanel(CSysUtil::LoadStr(IDS_PANEL_REFRESH));
     pPanelRefresh->Add(new CMFCRibbonButton(ID_CMD_REFRESH,
                                             CSysUtil::LoadStr(IDS_CMD_REFRESH), -1, -1));
     pPanelRefresh->Add(new CMFCRibbonCheckBox(ID_CMD_AUTOREFRESH,
                                               CSysUtil::LoadStr(IDS_CMD_AUTOREFRESH)));
 
-    // Ploca s naredbama nad odabranim procesom
-    CMFCRibbonPanel* pPanelDetails = pCategory->AddPanel(CSysUtil::LoadStr(IDS_PANEL_DETAILS));
-    pPanelDetails->Add(new CMFCRibbonButton(ID_CMD_SHOW_THREADS,
-                                            CSysUtil::LoadStr(IDS_CMD_THREADS), -1, -1));
-    pPanelDetails->Add(new CMFCRibbonButton(ID_CMD_SHOW_MODULES,
-                                            CSysUtil::LoadStr(IDS_CMD_MODULES), -1, -1));
-    pPanelDetails->Add(new CMFCRibbonButton(ID_CMD_KILL_PROCESS,
+    CMFCRibbonPanel* pPanelProcess = pCategory->AddPanel(CSysUtil::LoadStr(IDS_PANEL_PROCESS));
+    pPanelProcess->Add(new CMFCRibbonButton(ID_CMD_KILL_PROCESS,
                                             CSysUtil::LoadStr(IDS_CMD_KILL), -1, -1));
 
-    // Ploca s postavkama prikaza
     CMFCRibbonPanel* pPanelView = pCategory->AddPanel(CSysUtil::LoadStr(IDS_PANEL_VIEW));
     pPanelView->Add(new CMFCRibbonCheckBox(ID_CMD_TREE,
                                            CSysUtil::LoadStr(IDS_CMD_TREE)));
 
-    // Ploca s poljem za filtriranje popisa procesa
     CMFCRibbonPanel* pPanelFilter = pCategory->AddPanel(CSysUtil::LoadStr(IDS_PANEL_FILTER));
     pPanelFilter->Add(new CMFCRibbonEdit(ID_CMD_FILTER, 120,
                                          CSysUtil::LoadStr(IDS_FILTER_LABEL)));
@@ -148,7 +138,7 @@ void CMainFrame::SetStatusText(LPCTSTR lpszText)
 
 CProcMonDoc* CMainFrame::GetInspectorDoc() const
 {
-    // Svi MDI prozori dijele isti dokument, pa je dovoljno pitati aktivni.
+    // Sve tri kartice dijele isti dokument, pa je dovoljno pitati aktivnu.
     CMDIChildWnd* pChild = const_cast<CMainFrame*>(this)->MDIGetActive();
     if (pChild == NULL)
         return NULL;

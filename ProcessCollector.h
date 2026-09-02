@@ -3,9 +3,7 @@
 #include <vector>
 #include <map>
 
-//
 // Podaci o jednom procesu.
-//
 struct CProcessInfo
 {
     DWORD     pid          = 0;
@@ -20,21 +18,18 @@ struct CProcessInfo
     bool      accessible   = false; // je li proces uopce bilo moguce otvoriti
 };
 
-//
 // CProcessCollector - dohvaca popis svih procesa u sustavu i racuna
 // iskoristenje procesora usporedbom s prethodnim ocitanjem.
-//
 class CProcessCollector
 {
 public:
     CProcessCollector();
 
-    // Ocitava trenutno stanje sustava.
     void Refresh();
 
     const std::vector<CProcessInfo>& GetAll() const { return m_items; }
 
-    // Trazi proces po identifikatoru; vraca NULL ako ga nema.
+    // Vraca NULL ako procesa nema u zadnjem ocitanju.
     const CProcessInfo* Find(DWORD pid) const;
 
     // Uklanja proces iz zadnjeg ocitanja. Koristi se nakon uspjesnog prekida

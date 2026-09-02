@@ -21,10 +21,6 @@ BEGIN_MESSAGE_MAP(CProcMonDoc, CDocument)
     ON_UPDATE_COMMAND_UI(ID_CMD_AUTOREFRESH, &CProcMonDoc::OnUpdateAutoRefresh)
     ON_COMMAND(ID_CMD_TREE, &CProcMonDoc::OnTreeMode)
     ON_UPDATE_COMMAND_UI(ID_CMD_TREE, &CProcMonDoc::OnUpdateTreeMode)
-    ON_COMMAND(ID_CMD_SHOW_THREADS, &CProcMonDoc::OnShowThreads)
-    ON_UPDATE_COMMAND_UI(ID_CMD_SHOW_THREADS, &CProcMonDoc::OnUpdateNeedsSelection)
-    ON_COMMAND(ID_CMD_SHOW_MODULES, &CProcMonDoc::OnShowModules)
-    ON_UPDATE_COMMAND_UI(ID_CMD_SHOW_MODULES, &CProcMonDoc::OnUpdateNeedsSelection)
     ON_COMMAND(ID_CMD_KILL_PROCESS, &CProcMonDoc::OnKillProcess)
     ON_UPDATE_COMMAND_UI(ID_CMD_KILL_PROCESS, &CProcMonDoc::OnUpdateNeedsSelection)
 END_MESSAGE_MAP()
@@ -59,10 +55,6 @@ void CProcMonDoc::Serialize(CArchive& /*ar*/)
     // spremao u datoteku, pa je serijalizacija namjerno prazna.
 }
 
-// ---------------------------------------------------------------------------
-// Ocitavanje podataka
-// ---------------------------------------------------------------------------
-
 void CProcMonDoc::RefreshData()
 {
     m_processes.Refresh();
@@ -83,10 +75,6 @@ void CProcMonDoc::RefreshDetails()
     m_threads.Refresh(m_selectedPid);
     m_modules.Refresh(m_selectedPid);
 }
-
-// ---------------------------------------------------------------------------
-// Gradnja popisa za prikaz
-// ---------------------------------------------------------------------------
 
 void CProcMonDoc::BuildVisibleList()
 {
@@ -168,7 +156,6 @@ void CProcMonDoc::AddSubtree(size_t parentIndex, int depth, std::set<DWORD>& vis
     const DWORD parentPid = m_visible[parentIndex].info.pid;
     const std::vector<CProcessInfo>& all = m_processes.GetAll();
 
-    // Djeca zadanog procesa
     std::vector<const CProcessInfo*> children;
     for (size_t i = 0; i < all.size(); ++i)
     {
@@ -187,9 +174,8 @@ void CProcMonDoc::AddSubtree(size_t parentIndex, int depth, std::set<DWORD>& vis
     m_visible[parentIndex].hasChildren = true;
 
     if (!m_visible[parentIndex].expanded)
-        return;     // sklopljen cvor: djeca se ne prikazuju
+        return;
 
-    // Djeca se sortiraju po istom pravilu kao i ostatak popisa.
     std::sort(children.begin(), children.end(),
               [this](const CProcessInfo* left, const CProcessInfo* right)
               {
@@ -214,8 +200,6 @@ void CProcMonDoc::AddSubtree(size_t parentIndex, int depth, std::set<DWORD>& vis
 
 bool CProcMonDoc::IsRealParent(const CProcessInfo& child) const
 {
-    // Proces bez roditelja ili s roditeljem koji vise ne postoji prikazuje se
-    // kao korijen stabla.
     if (child.parentPid == 0 || child.parentPid == child.pid)
         return false;
 
@@ -248,10 +232,6 @@ bool CProcMonDoc::MatchesFilter(const CProcessInfo& info) const
 
     return (name.Find(filter) >= 0);
 }
-
-// ---------------------------------------------------------------------------
-// Sortiranje
-// ---------------------------------------------------------------------------
 
 bool CProcMonDoc::CompareProcesses(const CProcessInfo& left, const CProcessInfo& right) const
 {
@@ -306,15 +286,10 @@ bool CProcMonDoc::IsLess(const CProcessInfo& left, const CProcessInfo& right) co
         break;
     }
 
-    // Procesi s jednakom vrijednoscu u odabranom stupcu razvrstavaju se po
-    // PID-u, cime je redoslijed jednoznacan i popis ne poskakuje pri
-    // osvjezavanju.
+    // Procesi s jednakom vrijednoscu razvrstavaju se po PID-u, cime je
+    // redoslijed jednoznacan i popis ne poskakuje pri osvjezavanju.
     return left.pid < right.pid;
 }
-
-// ---------------------------------------------------------------------------
-// Postavke prikaza
-// ---------------------------------------------------------------------------
 
 void CProcMonDoc::SetSelectedPid(DWORD pid)
 {
@@ -323,6 +298,7 @@ void CProcMonDoc::SetSelectedPid(DWORD pid)
 
     m_selectedPid = pid;
     RefreshDetails();
+    UpdateStatusBar();
 
     UpdateAllViews(NULL, HINT_SELECTION);
 }
@@ -366,9 +342,9 @@ void CProcMonDoc::ToggleExpand(DWORD pid)
 
     std::set<DWORD>::iterator it = m_collapsed.find(pid);
     if (it == m_collapsed.end())
-        m_collapsed.insert(pid);    // sklopi
+        m_collapsed.insert(pid);
     else
-        m_collapsed.erase(it);      // rasiri
+        m_collapsed.erase(it);
 
     BuildVisibleList();
     UpdateAllViews(NULL, HINT_PROCESSES);
@@ -379,10 +355,6 @@ CString CProcMonDoc::GetSelectedProcessName() const
     const CProcessInfo* pInfo = m_processes.Find(m_selectedPid);
     return (pInfo != NULL) ? pInfo->name : CString();
 }
-
-// ---------------------------------------------------------------------------
-// Naredbe s Ribbon trake
-// ---------------------------------------------------------------------------
 
 void CProcMonDoc::OnRefresh()
 {
@@ -417,27 +389,6 @@ void CProcMonDoc::OnUpdateNeedsSelection(CCmdUI* pCmdUI)
     pCmdUI->Enable(m_selectedPid != 0);
 }
 
-void CProcMonDoc::OnShowThreads()
-{
-    OpenAdditionalView(theApp.GetThreadTemplate());
-}
-
-void CProcMonDoc::OnShowModules()
-{
-    OpenAdditionalView(theApp.GetModuleTemplate());
-}
-
-void CProcMonDoc::OpenAdditionalView(CMultiDocTemplate* pTemplate)
-{
-    if (pTemplate == NULL)
-        return;
-
-    // Nad istim dokumentom otvara se dodatni MDI prozor s drugom vrstom pogleda.
-    CFrameWnd* pFrame = pTemplate->CreateNewFrame(this, NULL);
-    if (pFrame != NULL)
-        pTemplate->InitialUpdateFrame(pFrame, this);
-}
-
 void CProcMonDoc::OnKillProcess()
 {
     const CProcessInfo* pInfo = m_processes.Find(m_selectedPid);
@@ -450,9 +401,8 @@ void CProcMonDoc::OnKillProcess()
     const CString name = pInfo->name;
     const DWORD   pid  = pInfo->pid;
 
-    // Programi poput preglednika ili glazbenih aplikacija sastoje se od vise
-    // procesa. Prekid samo glavnog procesa ostavio bi ostale i dalje pokrenute,
-    // pa se prikupljaju svi potomci odabranog procesa.
+    // Programi poput preglednika sastoje se od vise procesa, pa bi prekid samo
+    // glavnog procesa ostavio ostale pokrenutima.
     std::vector<DWORD> descendants;
     CollectDescendants(pid, descendants);
 
@@ -490,10 +440,9 @@ void CProcMonDoc::OnKillProcess()
     }
 
     // TerminateProcess samo zatrazi prekid i odmah se vraca, pa bi procesi u
-    // sljedecoj snimci sustava jos uvijek bili vidljivi. Umjesto cekanja, koje
-    // bi zaustavilo sucelje, uklanjaju se odmah iz ocitanog popisa. Ako prekid
-    // ipak ne bi uspio, redak ce se vratiti pri sljedecem ocitanju i prikaz ce
-    // opet odgovarati stvarnom stanju.
+    // sljedecoj snimci jos uvijek bili vidljivi. Umjesto cekanja, koje bi
+    // zaustavilo sucelje, uklanjaju se odmah iz ocitanog popisa; ako prekid
+    // ipak ne uspije, redak ce se vratiti pri sljedecem ocitanju.
     m_processes.Remove(pid);
     m_selectedPid = 0;
 
@@ -518,7 +467,6 @@ void CProcMonDoc::CollectDescendants(DWORD pid, std::vector<DWORD>& result) cons
         if (!IsRealParent(all[i]))
             continue;
 
-        // Zastita od ponavljanja u slucaju neocekivanih podataka.
         bool bAlreadyListed = false;
         for (size_t j = 0; j < result.size(); ++j)
         {
@@ -566,10 +514,6 @@ void CProcMonDoc::ReportKillError(const CString& name, DWORD pid, DWORD dwError)
     AfxMessageBox(message, MB_OK | MB_ICONEXCLAMATION);
 }
 
-// ---------------------------------------------------------------------------
-// Statusna traka
-// ---------------------------------------------------------------------------
-
 void CProcMonDoc::UpdateStatusBar()
 {
     ULONGLONG totalWorkingSet = 0;
@@ -578,20 +522,28 @@ void CProcMonDoc::UpdateStatusBar()
     for (size_t i = 0; i < all.size(); ++i)
         totalWorkingSet += all[i].workingSet;
 
+    // Odabrani proces prikazuje se u statusnoj traci, a ne u naslovu kartice,
+    // kako se natpisi kartica ne bi mijenjali pri svakom odabiru.
+    CString selection;
+    const CProcessInfo* pSelected = m_processes.Find(m_selectedPid);
+
+    if (pSelected == NULL)
+        selection = CSysUtil::LoadStr(IDS_STATUS_NO_SELECTION);
+    else
+        selection.Format(CSysUtil::LoadStr(IDS_STATUS_SELECTED),
+                         (LPCTSTR)pSelected->name, pSelected->pid);
+
     CString text;
     text.Format(CSysUtil::LoadStr(IDS_STATUS_FORMAT),
                 static_cast<int>(all.size()),
                 (LPCTSTR)CSysUtil::FormatBytes(totalWorkingSet),
+                (LPCTSTR)selection,
                 (LPCTSTR)CTime::GetCurrentTime().Format(_T("%H:%M:%S")));
 
     CMainFrame* pFrame = DYNAMIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
     if (pFrame != NULL)
         pFrame->SetStatusText(text);
 }
-
-// ---------------------------------------------------------------------------
-// Dijagnostika
-// ---------------------------------------------------------------------------
 
 #ifdef _DEBUG
 void CProcMonDoc::AssertValid() const

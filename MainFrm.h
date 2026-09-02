@@ -2,11 +2,8 @@
 
 class CProcMonDoc;
 
-//
-// CMainFrame - glavni MDI okvir aplikacije.
-// Gradi Ribbon traku i statusnu traku te prosljeduje sadrzaj polja za
-// filtriranje dokumentu.
-//
+// CMainFrame - glavni MDI okvir. Gradi Ribbon i statusnu traku, drzi mjerac
+// vremena za osvjezavanje i prosljeduje sadrzaj polja za filtriranje dokumentu.
 class CMainFrame : public CMDIFrameWndEx
 {
     DECLARE_DYNAMIC(CMainFrame)
@@ -14,7 +11,6 @@ class CMainFrame : public CMDIFrameWndEx
 public:
     CMainFrame();
 
-    // Postavlja tekst u statusnu traku (poziva ga dokument nakon osvjezavanja).
     void SetStatusText(LPCTSTR lpszText);
 
 protected:
@@ -27,8 +23,8 @@ protected:
 
 private:
     // Identifikator je namjerno velik broj. Standardne kontrole sustava koriste
-    // vlastite mjerace vremena s malim identifikatorima, pa bi mjerac postavljen
-    // na prozor kontrole mogao doci u sukob s njima.
+    // vlastite mjerace vremena s malim identifikatorima, pa bi moglo doci do
+    // sukoba.
     enum { timerRefresh = 1001, refreshIntervalMs = 1000 };
 
     void CreateRibbon();

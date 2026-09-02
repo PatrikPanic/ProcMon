@@ -44,7 +44,6 @@ void CThreadView::OnInitialUpdate()
                                    LVS_EX_DOUBLEBUFFER);
     InsertColumns();
     FillList();
-    UpdateFrameTitle();
 }
 
 void CThreadView::OnUpdate(CView* /*pSender*/, LPARAM /*lHint*/, CObject* /*pHint*/)
@@ -52,7 +51,6 @@ void CThreadView::OnUpdate(CView* /*pSender*/, LPARAM /*lHint*/, CObject* /*pHin
     // Popis se osvjezava i kod promjene odabira i kod redovnog osvjezavanja
     // podataka, jer se dretve procesa stalno stvaraju i zavrsavaju.
     FillList();
-    UpdateFrameTitle();
 }
 
 void CThreadView::InsertColumns()
@@ -69,12 +67,23 @@ void CThreadView::InsertColumns()
 void CThreadView::FillList()
 {
     CListCtrl& list = GetListCtrl();
-    const std::vector<CThreadInfo>& items = GetDocument()->GetThreads();
+    CProcMonDoc* pDoc = GetDocument();
 
-    // Odabir se izricito ponistava prije praznjenja popisa, inace obojeni
-    // redak ostaje nacrtan i nakon sto je stavka obrisana.
+    const std::vector<CThreadInfo>& items = pDoc->GetThreads();
+    const int topIndex = list.GetTopIndex();
+
+    // Odabir se izricito ponistava prije praznjenja popisa, inace obojeni redak
+    // ostaje nacrtan i nakon brisanja stavke.
     list.SetItemState(-1, 0, LVIS_SELECTED | LVIS_FOCUSED);
     list.DeleteAllItems();
+
+    // Kartica je otvorena i prije nego je proces odabran, pa se umjesto praznog
+    // popisa ispisuje uputa.
+    if (pDoc->GetSelectedPid() == 0)
+    {
+        list.InsertItem(0, CSysUtil::LoadStr(IDS_THREADS_NO_SELECTION));
+        return;
+    }
 
     CString text;
 
@@ -107,27 +116,10 @@ void CThreadView::FillList()
         }
     }
 
+    if (topIndex > 0 && topIndex < list.GetItemCount())
+        list.EnsureVisible(topIndex, FALSE);
+
     list.RedrawWindow(NULL, NULL,
                       RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
                       RDW_ALLCHILDREN | RDW_UPDATENOW);
-}
-
-void CThreadView::UpdateFrameTitle()
-{
-    CProcMonDoc* pDoc = GetDocument();
-    CString title;
-
-    if (pDoc->GetSelectedPid() == 0)
-    {
-        title = CSysUtil::LoadStr(IDS_CMD_THREADS);
-    }
-    else
-    {
-        title.Format(CSysUtil::LoadStr(IDS_TITLE_THREADS),
-                     (LPCTSTR)pDoc->GetSelectedProcessName(),
-                     pDoc->GetSelectedPid());
-    }
-
-    if (GetParentFrame() != NULL)
-        GetParentFrame()->SetWindowText(title);
 }

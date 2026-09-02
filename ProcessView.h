@@ -5,11 +5,9 @@
 class CProcMonDoc;
 struct CProcessRow;
 
-//
-// CProcessView - glavni pogled: popis svih procesa u sustavu.
-// Kad je ukljucen prikaz stabla, uvlaka i oznaka za sklapanje ispisuju se kao
-// dio teksta u stupcu s nazivom, pa nije potrebna posebna kontrola stabla.
-//
+// CProcessView - glavni pogled: popis svih procesa. Kad je ukljucen prikaz
+// stabla, uvlaka i oznaka za sklapanje ispisuju se kao dio teksta u stupcu s
+// nazivom, pa nije potrebna posebna kontrola stabla.
 class CProcessView : public CListView
 {
     DECLARE_DYNCREATE(CProcessView)

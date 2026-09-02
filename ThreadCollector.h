@@ -2,9 +2,7 @@
 
 #include <vector>
 
-//
 // Podaci o jednoj dretvi.
-//
 struct CThreadInfo
 {
     DWORD     tid           = 0;
@@ -16,13 +14,10 @@ struct CThreadInfo
     bool      accessible    = false;
 };
 
-//
 // CThreadCollector - dohvaca popis dretvi zadanog procesa.
-//
 class CThreadCollector
 {
 public:
-    // Ocitava dretve procesa s zadanim identifikatorom.
     // Ako je pid jednak nuli, popis se samo prazni.
     void Refresh(DWORD pid);
 

@@ -44,18 +44,14 @@ void CModuleView::OnInitialUpdate()
                                    LVS_EX_DOUBLEBUFFER);
     InsertColumns();
     FillList();
-    UpdateFrameTitle();
 }
 
 void CModuleView::OnUpdate(CView* /*pSender*/, LPARAM lHint, CObject* /*pHint*/)
 {
-    // Popis modula mijenja se rijetko, pa se osvjezava samo kod promjene
-    // odabranog procesa i kod izricitog osvjezavanja podataka.
     if (lHint != HINT_SELECTION && lHint != HINT_PROCESSES)
         return;
 
     FillList();
-    UpdateFrameTitle();
 }
 
 void CModuleView::InsertColumns()
@@ -71,12 +67,29 @@ void CModuleView::InsertColumns()
 void CModuleView::FillList()
 {
     CListCtrl& list = GetListCtrl();
-    const std::vector<CModuleInfo>& items = GetDocument()->GetModules();
+    CProcMonDoc* pDoc = GetDocument();
 
-    // Odabir se izricito ponistava prije praznjenja popisa, inace obojeni
-    // redak ostaje nacrtan i nakon sto je stavka obrisana.
+    const std::vector<CModuleInfo>& items = pDoc->GetModules();
+    const int topIndex = list.GetTopIndex();
+
+    // Odabir se izricito ponistava prije praznjenja popisa, inace obojeni redak
+    // ostaje nacrtan i nakon brisanja stavke.
     list.SetItemState(-1, 0, LVIS_SELECTED | LVIS_FOCUSED);
     list.DeleteAllItems();
+
+    if (pDoc->GetSelectedPid() == 0)
+    {
+        list.InsertItem(0, CSysUtil::LoadStr(IDS_THREADS_NO_SELECTION));
+        return;
+    }
+
+    // Snimka modula ne uspijeva za procese koje stiti sam sustav. Bez poruke bi
+    // korisnik vidio samo prazan popis i ne bi znao zasto.
+    if (!pDoc->AreModulesAccessible())
+    {
+        list.InsertItem(0, CSysUtil::LoadStr(IDS_MODULES_DENIED));
+        return;
+    }
 
     CString text;
 
@@ -95,27 +108,10 @@ void CModuleView::FillList()
         list.SetItemText(index, colPath, info.path);
     }
 
+    if (topIndex > 0 && topIndex < list.GetItemCount())
+        list.EnsureVisible(topIndex, FALSE);
+
     list.RedrawWindow(NULL, NULL,
                       RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
                       RDW_ALLCHILDREN | RDW_UPDATENOW);
-}
-
-void CModuleView::UpdateFrameTitle()
-{
-    CProcMonDoc* pDoc = GetDocument();
-    CString title;
-
-    if (pDoc->GetSelectedPid() == 0)
-    {
-        title = CSysUtil::LoadStr(IDS_CMD_MODULES);
-    }
-    else
-    {
-        title.Format(CSysUtil::LoadStr(IDS_TITLE_MODULES),
-                     (LPCTSTR)pDoc->GetSelectedProcessName(),
-                     pDoc->GetSelectedPid());
-    }
-
-    if (GetParentFrame() != NULL)
-        GetParentFrame()->SetWindowText(title);
 }

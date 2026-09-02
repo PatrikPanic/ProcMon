@@ -50,8 +50,6 @@ void CProcessView::OnInitialUpdate()
                                    LVS_EX_DOUBLEBUFFER);
     InsertColumns();
     FillList();
-
-    GetParentFrame()->SetWindowText(CSysUtil::LoadStr(IDS_TITLE_PROCESSES));
 }
 
 void CProcessView::OnUpdate(CView* /*pSender*/, LPARAM lHint, CObject* /*pHint*/)
@@ -72,14 +70,14 @@ void CProcessView::InsertColumns()
     list.InsertColumn(CProcMonDoc::colCpu,         CSysUtil::LoadStr(IDS_COL_CPU),         LVCFMT_RIGHT,  80);
     list.InsertColumn(CProcMonDoc::colWorkingSet,  CSysUtil::LoadStr(IDS_COL_WORKINGSET),  LVCFMT_RIGHT,  90);
     list.InsertColumn(CProcMonDoc::colPrivate,     CSysUtil::LoadStr(IDS_COL_PRIVATE),     LVCFMT_RIGHT, 120);
-    list.InsertColumn(CProcMonDoc::colThreadCount, CSysUtil::LoadStr(IDS_COL_THREADCOUNT), LVCFMT_RIGHT,  70);
+    list.InsertColumn(CProcMonDoc::colThreadCount, CSysUtil::LoadStr(IDS_COL_THREADCOUNT), LVCFMT_RIGHT,  90);
     list.InsertColumn(CProcMonDoc::colPath,        CSysUtil::LoadStr(IDS_COL_PATH),        LVCFMT_LEFT,  420);
 }
 
 CString CProcessView::BuildNameText(const CProcessRow& row) const
 {
-    // Uvlaka se postize razmacima, a stanje cvora oznakom ispred naziva.
-    // Tako nije potrebno vlastito crtanje ni kontrola stabla.
+    // Uvlaka se postize razmacima, a stanje cvora oznakom ispred naziva, pa
+    // nije potrebno vlastito crtanje ni kontrola stabla.
     CString text;
 
     for (int i = 0; i < row.depth; ++i)
@@ -106,8 +104,7 @@ void CProcessView::FillList()
     m_bFilling = true;
 
     // Odabir se izricito ponistava prije praznjenja popisa. Bez toga kontrola
-    // zadrzava obojeni redak i on ostaje nacrtan i nakon sto je stavka
-    // obrisana.
+    // zadrzava obojeni redak i on ostaje nacrtan i nakon brisanja stavke.
     list.SetItemState(-1, 0, LVIS_SELECTED | LVIS_FOCUSED);
     list.DeleteAllItems();
 
@@ -149,18 +146,13 @@ void CProcessView::FillList()
     if (topIndex > 0 && topIndex < list.GetItemCount())
         list.EnsureVisible(topIndex, FALSE);
 
-    // Popis se tijekom punjenja pomice (EnsureVisible), pa se na kraju cijela
-    // kontrola izricito ponovno iscrtava uz brisanje pozadine. Treperenje
-    // sprjecava prosireni stil LVS_EX_DOUBLEBUFFER.
+    // Popis se tijekom punjenja pomice, pa se na kraju cijela kontrola izricito
+    // ponovno iscrtava. Treperenje sprjecava stil LVS_EX_DOUBLEBUFFER.
     list.RedrawWindow(NULL, NULL,
                       RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
                       RDW_ALLCHILDREN | RDW_UPDATENOW);
     m_bFilling = false;
 }
-
-// ---------------------------------------------------------------------------
-// Obavijesti kontrole
-// ---------------------------------------------------------------------------
 
 void CProcessView::OnItemChanged(NMHDR* pNMHDR, LRESULT* pResult)
 {
@@ -223,10 +215,6 @@ void CProcessView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
     CListView::OnKeyDown(nChar, nRepCnt, nFlags);
 }
-
-// ---------------------------------------------------------------------------
-// Pomocne metode
-// ---------------------------------------------------------------------------
 
 bool CProcessView::IsClickOnMarker(int index, const POINT& point) const
 {

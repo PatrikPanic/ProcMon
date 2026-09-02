@@ -55,7 +55,6 @@ BOOL CProcMonApp::InitInstance()
     if (!CSysUtil::EnableDebugPrivilege())
         AfxMessageBox(CSysUtil::LoadStr(IDS_WARN_NO_DEBUG_PRIV), MB_OK | MB_ICONINFORMATION);
 
-    // Glavni predlozak: dokument s podacima i pogled s popisom procesa.
     m_pProcessTemplate = new CMultiDocTemplate(
         IDR_ProcMonTYPE,
         RUNTIME_CLASS(CProcMonDoc),
@@ -65,8 +64,8 @@ BOOL CProcMonApp::InitInstance()
         return FALSE;
     AddDocTemplate(m_pProcessTemplate);
 
-    // Pomocni predlosci se namjerno ne dodaju u popis predlozaka jer se iz njih
-    // ne otvaraju novi dokumenti, nego samo dodatni pogledi na postojeci.
+    // Predlosci za dretve i module namjerno se ne dodaju u popis predlozaka jer
+    // se iz njih ne otvaraju novi dokumenti, nego samo dodatni pogledi.
     m_pThreadTemplate = new CMultiDocTemplate(
         IDR_ProcMonTYPE,
         RUNTIME_CLASS(CProcMonDoc),
@@ -88,12 +87,35 @@ BOOL CProcMonApp::InitInstance()
     m_pMainWnd = pMainFrame;
 
     // Aplikacija ne otvara datoteke, nego odmah prikazuje stanje sustava.
-    m_pProcessTemplate->OpenDocumentFile(NULL);
+    // S dokumentom nastaje i prva kartica, ona s popisom procesa.
+    CDocument* pDoc = m_pProcessTemplate->OpenDocumentFile(NULL);
+    if (pDoc == NULL)
+        return FALSE;
+
+    CMDIChildWnd* pProcessFrame = pMainFrame->MDIGetActive();
+
+    CreateAdditionalView(m_pThreadTemplate, pDoc);
+    CreateAdditionalView(m_pModuleTemplate, pDoc);
+
+    // Nakon otvaranja aktivna je zadnja kartica, pa se odabir vraca na popis
+    // procesa jer se iz njega upravlja ostalim prikazima.
+    if (pProcessFrame != NULL)
+        pProcessFrame->MDIActivate();
 
     pMainFrame->ShowWindow(SW_SHOWMAXIMIZED);
     pMainFrame->UpdateWindow();
 
     return TRUE;
+}
+
+void CProcMonApp::CreateAdditionalView(CMultiDocTemplate* pTemplate, CDocument* pDoc)
+{
+    if (pTemplate == NULL || pDoc == NULL)
+        return;
+
+    CFrameWnd* pFrame = pTemplate->CreateNewFrame(pDoc, NULL);
+    if (pFrame != NULL)
+        pTemplate->InitialUpdateFrame(pFrame, pDoc);
 }
 
 int CProcMonApp::ExitInstance()
@@ -107,10 +129,6 @@ int CProcMonApp::ExitInstance()
 
     return CWinAppEx::ExitInstance();
 }
-
-// ---------------------------------------------------------------------------
-// Dijalog "O programu"
-// ---------------------------------------------------------------------------
 
 class CAboutDlg : public CDialogEx
 {

@@ -41,9 +41,8 @@ CString CSysUtil::LoadStr(UINT nID)
 
     if (!str.LoadString(nID))
     {
-        // String nije pronaden u resursima. Najcesci uzrok je da datoteka
-        // res\ProcMon.rc2 nije ukljucena u projekt ili ne sadrzi tablicu
-        // stringova, pa bi sucelje ostalo bez natpisa.
+        // Ako string nedostaje, sucelje bi ostalo bez natpisa; najcesci je uzrok
+        // to sto datoteka res\ProcMon.rc2 nije ukljucena u projekt.
         TRACE(_T("Nedostaje string u resursima, oznaka %u\n"), nID);
         ASSERT(FALSE);
     }

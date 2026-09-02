@@ -29,22 +29,20 @@ BEGIN
     // Ribbon
     IDS_RIBBON_CATEGORY     "Pregled"
     IDS_PANEL_REFRESH       "Osvježavanje"
-    IDS_PANEL_DETAILS       "Detalji procesa"
+    IDS_PANEL_PROCESS       "Odabrani proces"
     IDS_PANEL_FILTER        "Filtar"
+    IDS_PANEL_VIEW          "Prikaz"
     IDS_CMD_REFRESH         "Osvježi"
     IDS_CMD_AUTOREFRESH     "Automatski (1 s)"
-    IDS_CMD_THREADS         "Dretve"
-    IDS_CMD_MODULES         "Moduli"
     IDS_CMD_KILL            "Prekini proces"
+    IDS_CMD_TREE            "Stablo procesa"
     IDS_FILTER_LABEL        "Naziv:"
     IDS_STATUS_READY        "Spremno"
-    IDS_PANEL_VIEW          "Prikaz"
-    IDS_CMD_TREE            "Stablo procesa"
 
-    // Naslovi prozora
+    // Naslovi kartica
     IDS_TITLE_PROCESSES     "Procesi"
-    IDS_TITLE_THREADS       "Dretve procesa %s (PID %u)"
-    IDS_TITLE_MODULES       "Moduli procesa %s (PID %u)"
+    IDS_TITLE_THREADS       "Dretve"
+    IDS_TITLE_MODULES       "Moduli"
 
     // Stupci popisa procesa
     IDS_COL_PID             "PID"
@@ -52,7 +50,7 @@ BEGIN
     IDS_COL_CPU             "CPU (%)"
     IDS_COL_WORKINGSET      "RAM"
     IDS_COL_PRIVATE         "Privatna memorija"
-    IDS_COL_THREADCOUNT     "Threads"
+    IDS_COL_THREADCOUNT     "Broj dretvi"
     IDS_COL_PATH            "Putanja"
 
     // Stupci popisa dretvi
@@ -69,8 +67,12 @@ BEGIN
     IDS_COL_MODULEPATH      "Putanja"
 
     // Poruke
-    IDS_STATUS_FORMAT       "Procesa: %d          Ukupno RAM: %s          Osvježeno: %s"
+    IDS_STATUS_FORMAT       "Procesa: %d          Ukupno RAM: %s          %s          Osvježeno: %s"
+    IDS_STATUS_SELECTED     "Odabrano: %s (PID %u)"
+    IDS_STATUS_NO_SELECTION "Nije odabran proces"
     IDS_NOT_AVAILABLE       "nedostupno"
+    IDS_THREADS_NO_SELECTION "Odaberite proces u kartici Procesi."
+    IDS_MODULES_DENIED      "Popis modula nije dostupan za ovaj proces."
     IDS_CONFIRM_KILL        "Želite li stvarno prekinuti proces %s (PID %u)?\n\nNespremljeni podaci tog programa bit će izgubljeni."
     IDS_CONFIRM_KILL_TREE   "Proces %s (PID %u) pokrenuo je još %d procesa.\n\nŽelite li prekinuti proces zajedno sa svim procesima koje je pokrenuo?\n\nNespremljeni podaci tih programa bit će izgubljeni."
     IDS_ERR_KILL_FAILED     "Proces %s (PID %u) nije moguće prekinuti.\n\nGreška sustava %u: %s\n\nNeke procese štiti sam operacijski sustav i ne mogu se prekinuti ni s administratorskim ovlastima."

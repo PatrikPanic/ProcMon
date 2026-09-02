@@ -4,10 +4,7 @@
 
 class CProcMonDoc;
 
-//
 // CModuleView - pogled s popisom modula (DLL-ova) odabranog procesa.
-// Otvara se kao dodatni MDI prozor nad istim dokumentom.
-//
 class CModuleView : public CListView
 {
     DECLARE_DYNCREATE(CModuleView)
@@ -36,7 +33,6 @@ private:
 
     void InsertColumns();
     void FillList();
-    void UpdateFrameTitle();
 
 public:
     virtual ~CModuleView();

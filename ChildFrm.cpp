@@ -3,6 +3,10 @@
 #include "ProcMon.h"
 #include "ChildFrm.h"
 #include "ProcessView.h"
+#include "ThreadView.h"
+#include "ModuleView.h"
+#include "SysUtil.h"
+#include "StringIDs.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -30,41 +34,66 @@ BOOL CChildFrame::PreCreateWindow(CREATESTRUCT& cs)
     return TRUE;
 }
 
+BOOL CChildFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
+{
+    // Vrsta pogleda poznata je vec ovdje, prije nego se kartica pojavi na
+    // traci, pa se naslov odreduje odmah i poslije se vise ne mijenja.
+    if (pContext != NULL)
+        m_strTitle = TitleForView(pContext->m_pNewViewClass);
+
+    return CMDIChildWndEx::OnCreateClient(lpcs, pContext);
+}
+
+CString CChildFrame::TitleForView(CRuntimeClass* pViewClass)
+{
+    if (pViewClass == RUNTIME_CLASS(CProcessView))
+        return CSysUtil::LoadStr(IDS_TITLE_PROCESSES);
+
+    if (pViewClass == RUNTIME_CLASS(CThreadView))
+        return CSysUtil::LoadStr(IDS_TITLE_THREADS);
+
+    if (pViewClass == RUNTIME_CLASS(CModuleView))
+        return CSysUtil::LoadStr(IDS_TITLE_MODULES);
+
+    return CString();
+}
+
+CString CChildFrame::GetFrameText() const
+{
+    return m_strTitle.IsEmpty() ? CMDIChildWndEx::GetFrameText() : m_strTitle;
+}
+
+void CChildFrame::OnUpdateFrameTitle(BOOL bAddToTitle)
+{
+    if (m_strTitle.IsEmpty())
+    {
+        CMDIChildWndEx::OnUpdateFrameTitle(bAddToTitle);
+        return;
+    }
+
+    // Osnovna izvedba poziva se s FALSE kako bi osvjezila glavni okvir, ali ne
+    // i naslov kartice. S TRUE bi dopisala naziv dokumenta i redni broj
+    // prozora, a sve kartice dijele isti dokument.
+    CMDIChildWndEx::OnUpdateFrameTitle(FALSE);
+    SetWindowText(m_strTitle);
+}
+
 void CChildFrame::ActivateFrame(int nCmdShow)
 {
     CMDIChildWndEx::ActivateFrame(nCmdShow);
 
-    // Iz izbornika prozora uklanja se naredba za zatvaranje kako korisniku ne
-    // bi bila ponudena mogucnost koja ionako nece biti izvrsena. Pogled je
-    // dostupan tek nakon sto je okvir aktiviran, pa se provjera radi ovdje.
-    if (IsMainProcessWindow())
-    {
-        CMenu* pSysMenu = GetSystemMenu(FALSE);
-        if (pSysMenu != NULL)
-        {
-            pSysMenu->RemoveMenu(SC_CLOSE, MF_BYCOMMAND);
-            pSysMenu->RemoveMenu(SC_MOVE, MF_BYCOMMAND);
-        }
-    }
+    // Iz izbornika prozora uklanja se naredba za zatvaranje, da korisniku ne bi
+    // bila ponudena mogucnost koja se ionako nece izvrsiti.
+    CMenu* pSysMenu = GetSystemMenu(FALSE);
+    if (pSysMenu != NULL)
+        pSysMenu->RemoveMenu(SC_CLOSE, MF_BYCOMMAND);
 }
 
 void CChildFrame::OnClose()
 {
-    // Popis procesa je sredisnji dio aplikacije. Kad bi se zatvorio, zatvorio bi
-    // se i dokument sa svim podacima, pa se zahtjev za zatvaranjem zanemaruje.
-    if (IsMainProcessWindow())
-        return;
-
-    CMDIChildWndEx::OnClose();
-}
-
-bool CChildFrame::IsMainProcessWindow() const
-{
-    CView* pView = const_cast<CChildFrame*>(this)->GetActiveView();
-    if (pView == NULL)
-        return false;
-
-    return (pView->IsKindOf(RUNTIME_CLASS(CProcessView)) != 0);
+    // Zahtjev za zatvaranjem kartice se zanemaruje. Zatvaranje glavnog prozora
+    // ne prolazi ovuda, nego kroz zatvaranje dokumenta, pa aplikacija i dalje
+    // moze normalno zavrsiti.
 }
 
 #ifdef _DEBUG

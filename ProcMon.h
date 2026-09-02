@@ -6,19 +6,13 @@
 
 #include "resource.h"
 
-//
-// CProcMonApp - klasa aplikacije.
-// Osim uobicajene inicijalizacije stvara tri predloska dokumenta: jedan za
-// popis procesa (registriran kao glavni) te po jedan za prikaz dretvi i
-// modula, koji sluze za otvaranje dodatnih MDI prozora nad istim dokumentom.
-//
+// CProcMonApp - klasa aplikacije. Stvara tri predloska dokumenta: jedan za
+// popis procesa (registriran kao glavni) te po jedan za prikaz dretvi i modula.
+// Sve tri kartice otvaraju se pri pokretanju, nad istim dokumentom.
 class CProcMonApp : public CWinAppEx
 {
 public:
     CProcMonApp();
-
-    CMultiDocTemplate* GetThreadTemplate() const { return m_pThreadTemplate; }
-    CMultiDocTemplate* GetModuleTemplate() const { return m_pModuleTemplate; }
 
     virtual BOOL InitInstance();
     virtual int  ExitInstance();
@@ -28,6 +22,10 @@ protected:
     DECLARE_MESSAGE_MAP()
 
 private:
+    // Otvara dodatnu karticu s pogledom iz zadanog predloska, nad vec
+    // postojecim dokumentom.
+    void CreateAdditionalView(CMultiDocTemplate* pTemplate, CDocument* pDoc);
+
     CMultiDocTemplate* m_pProcessTemplate;
     CMultiDocTemplate* m_pThreadTemplate;
     CMultiDocTemplate* m_pModuleTemplate;

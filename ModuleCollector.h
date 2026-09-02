@@ -2,9 +2,7 @@
 
 #include <vector>
 
-//
 // Podaci o jednom ucitanom modulu (izvrsna datoteka ili DLL).
-//
 struct CModuleInfo
 {
     ULONGLONG baseAddress = 0;
@@ -13,19 +11,16 @@ struct CModuleInfo
     CString   path;
 };
 
-//
 // CModuleCollector - dohvaca popis modula ucitanih u zadani proces.
-//
 class CModuleCollector
 {
 public:
-    // Ocitava module procesa s zadanim identifikatorom.
     // Ako je pid jednak nuli, popis se samo prazni.
     void Refresh(DWORD pid);
 
     const std::vector<CModuleInfo>& GetAll() const { return m_items; }
 
-    // Je li zadnje ocitanje uspjelo (kod nedostatka ovlasti ne uspije).
+    // Je li zadnje ocitanje uspjelo; kod zasticenih procesa ne uspije.
     bool IsAccessible() const { return m_accessible; }
 
 private:

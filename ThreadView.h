@@ -4,10 +4,7 @@
 
 class CProcMonDoc;
 
-//
 // CThreadView - pogled s popisom dretvi odabranog procesa.
-// Otvara se kao dodatni MDI prozor nad istim dokumentom.
-//
 class CThreadView : public CListView
 {
     DECLARE_DYNCREATE(CThreadView)
@@ -37,7 +34,6 @@ private:
 
     void InsertColumns();
     void FillList();
-    void UpdateFrameTitle();
 
 public:
     virtual ~CThreadView();

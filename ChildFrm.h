@@ -1,10 +1,10 @@
 #pragma once
 
-//
-// CChildFrame - okvir jednog MDI prozora.
-// Prozor s popisom procesa je glavni prozor aplikacije i ne moze se zatvoriti,
-// dok se prozori s dretvama i modulima zatvaraju normalno.
-//
+// CChildFrame - okvir jedne kartice. Sve tri kartice rade nad istim
+// dokumentom, pa bi im MFC dao isti naslov s rednim brojem prozora
+// ("Procesi:1", "Procesi:2"); zato okvir sam odreduje naslov prema vrsti
+// pogleda koji sadrzi. Kartice se ne mogu zatvoriti jer aplikacija stalno
+// prikazuje sva tri prikaza.
 class CChildFrame : public CMDIChildWndEx
 {
     DECLARE_DYNCREATE(CChildFrame)
@@ -12,17 +12,23 @@ class CChildFrame : public CMDIChildWndEx
 public:
     CChildFrame();
 
+    // Okvir ovu metodu zove kad crta natpis kartice.
+    virtual CString GetFrameText() const;
+
 protected:
     virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+    virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
     virtual void ActivateFrame(int nCmdShow);
+    virtual void OnUpdateFrameTitle(BOOL bAddToTitle);
 
     afx_msg void OnClose();
 
     DECLARE_MESSAGE_MAP()
 
 private:
-    // Vraca true ako ovaj okvir sadrzi pogled s popisom procesa.
-    bool IsMainProcessWindow() const;
+    static CString TitleForView(CRuntimeClass* pViewClass);
+
+    CString m_strTitle;
 
 public:
     virtual ~CChildFrame();
