@@ -7,13 +7,16 @@ u operacijskom sustavu Windows, s osvježavanjem podataka u stvarnom vremenu.
 
 - popis svih aktivnih procesa: PID, naziv, iskorištenje procesora, radni skup,
   privatna memorija, broj dretvi i puna putanja izvršne datoteke
+- prikaz procesa u obliku stabla, po procesu koji ih je pokrenuo, uz sklapanje
+  i širenje pojedinog čvora
 - sortiranje popisa klikom na zaglavlje stupca i filtriranje po nazivu procesa
 - pregled dretvi odabranog procesa: identifikator dretve, osnovni prioritet,
   vrijeme provedeno u jezgri i u korisničkom načinu rada, vrijeme nastanka
 - pregled učitanih modula i DLL-ova odabranog procesa: naziv, bazna adresa,
   veličina i putanja
 - osvježavanje podataka svake sekunde, uz mogućnost isključivanja
-- prekid odabranog procesa uz potvrdu korisnika
+- prekid odabranog procesa, zajedno sa svim procesima koje je pokrenuo, uz
+  potvrdu korisnika
 
 ## Zahtjevi
 
@@ -23,7 +26,8 @@ u operacijskom sustavu Windows, s osvježavanjem podataka u stvarnom vremenu.
 ## Prevođenje
 
 1. Otvoriti `ProcMon.sln` u razvojnom okruženju Visual Studio 2022.
-2. Odabrati konfiguraciju `Debug` ili `Release` i platformu `x64`.
+2. Odabrati konfiguraciju `Debug` ili `Release`; platforma je `x64`
+   (32-bitni program ne može čitati module 64-bitnih procesa, pa se ne gradi).
 3. Pokrenuti *Build → Build Solution*.
 
 Aplikacija u manifestu traži ovlasti administratora, pa se pri pokretanju
@@ -32,39 +36,50 @@ aplikacija se pokreće, ali podaci o sistemskim procesima ostaju nepotpuni.
 
 ## Korištenje
 
-Nakon pokretanja otvara se prozor s popisom svih procesa koji se osvježava
-svake sekunde.
+Nakon pokretanja otvaraju se tri kartice: **Procesi**, **Dretve** i **Moduli**.
+Kartice su stalno otvorene i ne mogu se zatvoriti, a sve tri prikazuju podatke
+iz istog očitanja, koje se osvježava svake sekunde.
 
-- **Osvježi** – ručno očitavanje trenutnog stanja sustava.
-- **Automatski (1 s)** – uključuje ili isključuje osvježavanje u stvarnom vremenu.
-  Isključivanje je korisno kad se popis pregledava ili sortira.
-- **Naziv** – u polje se upisuje dio naziva procesa; prikazuju se samo procesi
-  čiji naziv sadrži upisani tekst.
-- Klik na zaglavlje stupca sortira popis po tom stupcu; ponovni klik na isti
-  stupac obrće redoslijed.
-- Odabirom procesa u popisu i pritiskom na **Dretve** ili **Moduli** otvara se
-  novi prozor s pripadajućim podacima. Ti se prozori automatski osvježavaju
-  zajedno s glavnim popisom i prate promjenu odabranog procesa.
-- **Prekini proces** prekida izvođenje odabranog procesa nakon potvrde.
+U kartici **Procesi**:
 
-Svi prozori prikazuju se kao kartice unutar glavnog prozora aplikacije.
+- klik na proces odabire ga; kartice **Dretve** i **Moduli** odmah prikazuju
+  podatke tog procesa, a njegov naziv i PID ispisani su u statusnoj traci
+- klik na zaglavlje stupca sortira popis po tom stupcu; ponovni klik na isti
+  stupac obrće redoslijed
+- oznaka `[+]` ili `[-]` ispred naziva sklapa i širi čvor stabla; isto rade
+  dvostruki klik na redak te tipke `+` i `-`
+
+Naredbe na Ribbon traci:
+
+- **Osvježi** – ručno očitavanje trenutnog stanja sustava
+- **Automatski (1 s)** – uključuje ili isključuje osvježavanje u stvarnom
+  vremenu; isključivanje je korisno kad se popis pregledava ili sortira
+- **Stablo procesa** – prebacuje između hijerarhijskog i ravnog popisa
+- **Prekini proces** – prekida odabrani proces nakon potvrde
+- **Naziv:** – u polje se upisuje dio naziva procesa; prikazuju se samo procesi
+  čiji naziv sadrži upisani tekst (dok je filtar upisan, popis je ravan)
+
+Za procese koje štiti sam operacijski sustav pojedini podaci nisu dostupni; u
+popisu je tada ispisano `nedostupno`, a umjesto popisa modula prikazuje se
+odgovarajuća poruka.
 
 ## Struktura projekta
 
-| Datoteka | Opis |
-|---|---|
-| `ProcessCollector.h/.cpp` | očitavanje popisa procesa i izračun iskorištenja procesora |
-| `ThreadCollector.h/.cpp` | očitavanje dretvi zadanog procesa |
-| `ModuleCollector.h/.cpp` | očitavanje modula zadanog procesa |
-| `SysUtil.h/.cpp` | pomoćne metode (ovlasti, oblikovanje brojeva i vremena) |
-| `ProcMonDoc.h/.cpp` | dokument: podaci, filtriranje, sortiranje i obrada naredbi |
-| `ProcessView.h/.cpp` | pogled s popisom procesa i mjeračem vremena |
-| `ThreadView.h/.cpp` | pogled s popisom dretvi |
-| `ModuleView.h/.cpp` | pogled s popisom modula |
-| `MainFrm.h/.cpp` | glavni okvir, Ribbon traka i statusna traka |
-| `ProcMon.h/.cpp` | klasa aplikacije i predlošci dokumenata |
-| `StringIDs.h`, `res\ProcMon.rc2` | identifikatori i tekstovi sučelja u resursima |
-| `Commands.h` | oznake naredbi i obavijesti prema pogledima |
+| Datoteka                         | Opis                                                       |
+| -------------------------------- | ---------------------------------------------------------- |
+| `ProcessCollector.h/.cpp`        | očitavanje popisa procesa i izračun iskorištenja procesora |
+| `ThreadCollector.h/.cpp`         | očitavanje dretvi zadanog procesa                          |
+| `ModuleCollector.h/.cpp`         | očitavanje modula zadanog procesa                          |
+| `SysUtil.h/.cpp`                 | pomoćne metode (ovlasti, oblikovanje brojeva i vremena)    |
+| `ProcMonDoc.h/.cpp`              | dokument: podaci, filtriranje, sortiranje i obrada naredbi |
+| `ProcessView.h/.cpp`             | pogled s popisom procesa i stablom                         |
+| `ThreadView.h/.cpp`              | pogled s popisom dretvi                                    |
+| `ModuleView.h/.cpp`              | pogled s popisom modula                                    |
+| `ChildFrm.h/.cpp`                | okvir kartice: naslov kartice i zabrana zatvaranja         |
+| `MainFrm.h/.cpp`                 | glavni okvir, Ribbon traka, statusna traka i mjerač vremena |
+| `ProcMon.h/.cpp`                 | klasa aplikacije i predlošci dokumenata                    |
+| `StringIDs.h`, `res\ProcMon.rc2` | identifikatori i tekstovi sučelja u resursima              |
+| `Commands.h`                     | oznake naredbi i obavijesti prema pogledima                |
 
 Sloj za dohvat podataka (`*Collector`) ne ovisi o sučelju, pa se isti podaci
 mogu prikazati u bilo kojem pogledu.
