@@ -16,6 +16,7 @@
 #define IDS_STATUS_READY           40008
 #define IDS_PANEL_VIEW             40009
 #define IDS_CMD_TREE               40010
+#define IDS_CMD_ABOUT              40011
 
 // Naslovi kartica
 #define IDS_TITLE_PROCESSES        40020

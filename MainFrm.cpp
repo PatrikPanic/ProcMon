@@ -35,8 +35,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     if (CMDIFrameWndEx::OnCreate(lpCreateStruct) == -1)
         return -1;
 
-    // Gumb za zatvaranje kartice je iskljucen jer su sve tri kartice stalno
-    // otvorene.
+    // Gumb za zatvaranje kartice je iskljucen jer su sve tri kartice stalno otvorene.
     CMDITabInfo tabInfo;
     tabInfo.m_style                  = CMFCTabCtrl::STYLE_3D_ONENOTE;
     tabInfo.m_bActiveTabCloseButton  = FALSE;
@@ -108,7 +107,11 @@ void CMainFrame::CreateRibbon()
 
     CMFCRibbonPanel* pPanelFilter = pCategory->AddPanel(CSysUtil::LoadStr(IDS_PANEL_FILTER));
     pPanelFilter->Add(new CMFCRibbonEdit(ID_CMD_FILTER, 120,
-                                         CSysUtil::LoadStr(IDS_FILTER_LABEL)));
+                                            CSysUtil::LoadStr(IDS_FILTER_LABEL)));
+
+    // Gumb se smjesta desno od trake s karticama; naredbu obraduje klasa aplikacije.
+    m_wndRibbonBar.AddToTabs(new CMFCRibbonButton(ID_APP_ABOUT,
+                                        CSysUtil::LoadStr(IDS_CMD_ABOUT), -1, -1));
 }
 
 void CMainFrame::OnFilterChanged()
