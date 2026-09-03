@@ -140,22 +140,13 @@ public:
 protected:
     virtual void DoDataExchange(CDataExchange* pDX) { CDialogEx::DoDataExchange(pDX); }
     DECLARE_MESSAGE_MAP()
-public:
-    afx_msg void OnBnClickedOk();
 };
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
-    ON_BN_CLICKED(IDOK, &CAboutDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 void CProcMonApp::OnAppAbout()
 {
     CAboutDlg aboutDlg;
     aboutDlg.DoModal();
-}
-
-void CAboutDlg::OnBnClickedOk()
-{
-    // TODO: Add your control notification handler code here
-    CDialogEx::OnOK();
 }
