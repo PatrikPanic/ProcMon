@@ -38,7 +38,7 @@ BOOL CChildFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 {
     // Vrsta pogleda poznata je vec ovdje, prije nego se kartica pojavi na
     // traci, pa se naslov odreduje odmah i poslije se vise ne mijenja.
-    if (pContext != NULL)
+    if (pContext != nullptr)
         m_strTitle = TitleForView(pContext->m_pNewViewClass);
 
     return CMDIChildWndEx::OnCreateClient(lpcs, pContext);
@@ -85,7 +85,7 @@ void CChildFrame::ActivateFrame(int nCmdShow)
     // Iz izbornika prozora uklanja se naredba za zatvaranje, da korisniku ne bi
     // bila ponudena mogucnost koja se ionako nece izvrsiti.
     CMenu* pSysMenu = GetSystemMenu(FALSE);
-    if (pSysMenu != NULL)
+    if (pSysMenu != nullptr)
         pSysMenu->RemoveMenu(SC_CLOSE, MF_BYCOMMAND);
 }
 

@@ -24,8 +24,9 @@ protected:
 private:
     // Identifikator je namjerno velik broj. Standardne kontrole sustava koriste
     // vlastite mjerace vremena s malim identifikatorima, pa bi moglo doci do
-    // sukoba.
-    enum { timerRefresh = 1001, refreshIntervalMs = 1000 };
+    // sukoba. Ocitanje se odvija u glavnoj dretvi, pa je razmak od 3 s odabran
+    // tako da sucelje ostane odzivno i na sporijim racunalima.
+    enum { timerRefresh = 1001, refreshIntervalMs = 3000 };
 
     void CreateRibbon();
     CProcMonDoc* GetInspectorDoc() const;

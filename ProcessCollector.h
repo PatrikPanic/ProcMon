@@ -29,7 +29,7 @@ public:
 
     const std::vector<CProcessInfo>& GetAll() const { return m_items; }
 
-    // Vraca NULL ako procesa nema u zadnjem ocitanju.
+    // Vraca nullptr ako procesa nema u zadnjem ocitanju.
     const CProcessInfo* Find(DWORD pid) const;
 
     // Uklanja proces iz zadnjeg ocitanja. Koristi se nakon uspjesnog prekida

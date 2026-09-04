@@ -48,7 +48,7 @@ void CThreadCollector::Refresh(DWORD pid)
 void CThreadCollector::ReadThreadTimes(CThreadInfo& info) const
 {
     HANDLE hThread = OpenThread(THREAD_QUERY_LIMITED_INFORMATION, FALSE, info.tid);
-    if (hThread == NULL)
+    if (hThread == nullptr)
         return;
 
     info.accessible = true;

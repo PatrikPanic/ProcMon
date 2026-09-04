@@ -59,7 +59,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
     // Mjerac vremena drzi glavni okvir, a ne pojedini pogled, pa osvjezavanje
     // radi neovisno o tome koja je kartica prikazana.
-    SetTimer(timerRefresh, refreshIntervalMs, NULL);
+    SetTimer(timerRefresh, refreshIntervalMs, nullptr);
 
     return 0;
 }
@@ -75,7 +75,7 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
     if (nIDEvent == timerRefresh)
     {
         CProcMonDoc* pDoc = GetInspectorDoc();
-        if (pDoc != NULL && pDoc->IsAutoRefresh())
+        if (pDoc != nullptr && pDoc->IsAutoRefresh())
             pDoc->RefreshData();
     }
 
@@ -118,11 +118,11 @@ void CMainFrame::OnFilterChanged()
 {
     CMFCRibbonEdit* pEdit =
         DYNAMIC_DOWNCAST(CMFCRibbonEdit, m_wndRibbonBar.FindByID(ID_CMD_FILTER));
-    if (pEdit == NULL)
+    if (pEdit == nullptr)
         return;
 
     CProcMonDoc* pDoc = GetInspectorDoc();
-    if (pDoc != NULL)
+    if (pDoc != nullptr)
         pDoc->SetFilter(pEdit->GetEditText());
 }
 
@@ -131,7 +131,7 @@ void CMainFrame::SetStatusText(LPCTSTR lpszText)
     CMFCRibbonStatusBarPane* pPane =
         DYNAMIC_DOWNCAST(CMFCRibbonStatusBarPane, m_wndStatusBar.FindElement(ID_CMD_STATUS_PANE));
 
-    if (pPane != NULL)
+    if (pPane != nullptr)
     {
         pPane->SetText(lpszText);
         m_wndStatusBar.Invalidate();
@@ -143,8 +143,8 @@ CProcMonDoc* CMainFrame::GetInspectorDoc() const
 {
     // Sve tri kartice dijele isti dokument, pa je dovoljno pitati aktivnu.
     CMDIChildWnd* pChild = const_cast<CMainFrame*>(this)->MDIGetActive();
-    if (pChild == NULL)
-        return NULL;
+    if (pChild == nullptr)
+        return nullptr;
 
     return DYNAMIC_DOWNCAST(CProcMonDoc, pChild->GetActiveDocument());
 }

@@ -148,7 +148,7 @@ void CProcessView::FillList()
 
     // Popis se tijekom punjenja pomice, pa se na kraju cijela kontrola izricito
     // ponovno iscrtava. Treperenje sprjecava stil LVS_EX_DOUBLEBUFFER.
-    list.RedrawWindow(NULL, NULL,
+    list.RedrawWindow(nullptr, nullptr,
                       RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
                       RDW_ALLCHILDREN | RDW_UPDATENOW);
     m_bFilling = false;
@@ -234,7 +234,7 @@ bool CProcessView::IsClickOnMarker(int index, const POINT& point) const
     // Sirina uvlake i oznake racuna se iz stvarne sirine ispisanog teksta, pa
     // ostaje tocna i kad se promijeni font.
     CDC* pDC = list.GetDC();
-    if (pDC == NULL)
+    if (pDC == nullptr)
         return false;
 
     CFont* pOldFont = pDC->SelectObject(list.GetFont());

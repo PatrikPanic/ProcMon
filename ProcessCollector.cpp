@@ -79,7 +79,7 @@ ULONGLONG CProcessCollector::ReadProcessDetails(CProcessInfo& info) const
     // PROCESS_QUERY_LIMITED_INFORMATION je dovoljan za putanju, memoriju i
     // vremena, a uspijeva na vise procesa nego PROCESS_QUERY_INFORMATION.
     HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, info.pid);
-    if (hProcess == NULL)
+    if (hProcess == nullptr)
         return 0;
 
     info.accessible = true;
@@ -116,7 +116,7 @@ const CProcessInfo* CProcessCollector::Find(DWORD pid) const
         if (m_items[i].pid == pid)
             return &m_items[i];
     }
-    return NULL;
+    return nullptr;
 }
 
 void CProcessCollector::Remove(DWORD pid)

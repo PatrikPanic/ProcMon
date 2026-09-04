@@ -60,14 +60,14 @@ void CProcMonDoc::RefreshData()
     m_processes.Refresh();
 
     // Ako je odabrani proces u meduvremenu zavrsio, odabir se ponistava.
-    if (m_selectedPid != 0 && m_processes.Find(m_selectedPid) == NULL)
+    if (m_selectedPid != 0 && m_processes.Find(m_selectedPid) == nullptr)
         m_selectedPid = 0;
 
     BuildVisibleList();
     RefreshDetails();
     UpdateStatusBar();
 
-    UpdateAllViews(NULL, HINT_PROCESSES);
+    UpdateAllViews(nullptr, HINT_PROCESSES);
 }
 
 void CProcMonDoc::RefreshDetails()
@@ -204,7 +204,7 @@ bool CProcMonDoc::IsRealParent(const CProcessInfo& child) const
         return false;
 
     const CProcessInfo* pParent = m_processes.Find(child.parentPid);
-    if (pParent == NULL)
+    if (pParent == nullptr)
         return false;
 
     // Windows ponovno dodjeljuje identifikatore zavrsenih procesa, pa se moze
@@ -300,7 +300,7 @@ void CProcMonDoc::SetSelectedPid(DWORD pid)
     RefreshDetails();
     UpdateStatusBar();
 
-    UpdateAllViews(NULL, HINT_SELECTION);
+    UpdateAllViews(nullptr, HINT_SELECTION);
 }
 
 void CProcMonDoc::SetFilter(const CString& filter)
@@ -312,7 +312,7 @@ void CProcMonDoc::SetFilter(const CString& filter)
     BuildVisibleList();
     UpdateStatusBar();
 
-    UpdateAllViews(NULL, HINT_PROCESSES);
+    UpdateAllViews(nullptr, HINT_PROCESSES);
 }
 
 void CProcMonDoc::SortByColumn(int column)
@@ -332,7 +332,7 @@ void CProcMonDoc::SortByColumn(int column)
     }
 
     BuildVisibleList();
-    UpdateAllViews(NULL, HINT_PROCESSES);
+    UpdateAllViews(nullptr, HINT_PROCESSES);
 }
 
 void CProcMonDoc::ToggleExpand(DWORD pid)
@@ -347,13 +347,13 @@ void CProcMonDoc::ToggleExpand(DWORD pid)
         m_collapsed.erase(it);
 
     BuildVisibleList();
-    UpdateAllViews(NULL, HINT_PROCESSES);
+    UpdateAllViews(nullptr, HINT_PROCESSES);
 }
 
 CString CProcMonDoc::GetSelectedProcessName() const
 {
     const CProcessInfo* pInfo = m_processes.Find(m_selectedPid);
-    return (pInfo != NULL) ? pInfo->name : CString();
+    return (pInfo != nullptr) ? pInfo->name : CString();
 }
 
 void CProcMonDoc::OnRefresh()
@@ -376,7 +376,7 @@ void CProcMonDoc::OnTreeMode()
     m_bTreeMode = !m_bTreeMode;
 
     BuildVisibleList();
-    UpdateAllViews(NULL, HINT_PROCESSES);
+    UpdateAllViews(nullptr, HINT_PROCESSES);
 }
 
 void CProcMonDoc::OnUpdateTreeMode(CCmdUI* pCmdUI)
@@ -392,7 +392,7 @@ void CProcMonDoc::OnUpdateNeedsSelection(CCmdUI* pCmdUI)
 void CProcMonDoc::OnKillProcess()
 {
     const CProcessInfo* pInfo = m_processes.Find(m_selectedPid);
-    if (pInfo == NULL)
+    if (pInfo == nullptr)
     {
         AfxMessageBox(CSysUtil::LoadStr(IDS_ERR_NO_SELECTION), MB_OK | MB_ICONINFORMATION);
         return;
@@ -450,7 +450,7 @@ void CProcMonDoc::OnKillProcess()
     RefreshDetails();
     UpdateStatusBar();
 
-    UpdateAllViews(NULL, HINT_PROCESSES);
+    UpdateAllViews(nullptr, HINT_PROCESSES);
 }
 
 void CProcMonDoc::CollectDescendants(DWORD pid, std::vector<DWORD>& result) const
@@ -490,7 +490,7 @@ bool CProcMonDoc::TerminateOne(DWORD pid, DWORD& dwError) const
     dwError = ERROR_SUCCESS;
 
     HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pid);
-    if (hProcess == NULL)
+    if (hProcess == nullptr)
     {
         dwError = GetLastError();
         return false;
@@ -527,7 +527,7 @@ void CProcMonDoc::UpdateStatusBar()
     CString selection;
     const CProcessInfo* pSelected = m_processes.Find(m_selectedPid);
 
-    if (pSelected == NULL)
+    if (pSelected == nullptr)
         selection = CSysUtil::LoadStr(IDS_STATUS_NO_SELECTION);
     else
         selection.Format(CSysUtil::LoadStr(IDS_STATUS_SELECTED),
@@ -541,7 +541,7 @@ void CProcMonDoc::UpdateStatusBar()
                 (LPCTSTR)CTime::GetCurrentTime().Format(_T("%H:%M:%S")));
 
     CMainFrame* pFrame = DYNAMIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
-    if (pFrame != NULL)
+    if (pFrame != nullptr)
         pFrame->SetStatusText(text);
 }
 

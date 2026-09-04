@@ -7,7 +7,7 @@
 
 bool CSysUtil::EnableDebugPrivilege()
 {
-    HANDLE hToken = NULL;
+    HANDLE hToken = nullptr;
     if (!OpenProcessToken(GetCurrentProcess(),
                           TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
     {
@@ -17,14 +17,14 @@ bool CSysUtil::EnableDebugPrivilege()
     LUID luid = {};
     bool bResult = false;
 
-    if (LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &luid))
+    if (LookupPrivilegeValue(nullptr, SE_DEBUG_NAME, &luid))
     {
         TOKEN_PRIVILEGES tp = {};
         tp.PrivilegeCount = 1;
         tp.Privileges[0].Luid = luid;
         tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
-        AdjustTokenPrivileges(hToken, FALSE, &tp, sizeof(tp), NULL, NULL);
+        AdjustTokenPrivileges(hToken, FALSE, &tp, sizeof(tp), nullptr, nullptr);
 
         // AdjustTokenPrivileges vraca TRUE i kad ovlast nije dodijeljena,
         // pa se stvarni ishod provjerava preko GetLastError.
@@ -109,21 +109,21 @@ CString CSysUtil::FormatDuration(ULONGLONG time100ns)
 
 CString CSysUtil::FormatSystemError(DWORD dwError)
 {
-    LPTSTR lpBuffer = NULL;
+    LPTSTR lpBuffer = nullptr;
 
     const DWORD cch = FormatMessage(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
         FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL, dwError, 0, reinterpret_cast<LPTSTR>(&lpBuffer), 0, NULL);
+        nullptr, dwError, 0, reinterpret_cast<LPTSTR>(&lpBuffer), 0, nullptr);
 
     CString str;
-    if (cch > 0 && lpBuffer != NULL)
+    if (cch > 0 && lpBuffer != nullptr)
     {
         str = lpBuffer;
         str.Trim();
     }
 
-    if (lpBuffer != NULL)
+    if (lpBuffer != nullptr)
         LocalFree(lpBuffer);
 
     return str;

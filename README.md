@@ -1,5 +1,7 @@
 # Process & Memory Viewer
 
+[![Build](https://github.com/PatrikPanic/ProcMon/actions/workflows/build.yml/badge.svg)](https://github.com/PatrikPanic/ProcMon/actions/workflows/build.yml)
+
 Seminarski rad (NWP projekt) – aplikacija za pregled procesa, dretvi i učitanih modula
 u operacijskom sustavu Windows, s osvježavanjem podataka u stvarnom vremenu.
 
@@ -14,7 +16,7 @@ u operacijskom sustavu Windows, s osvježavanjem podataka u stvarnom vremenu.
   vrijeme provedeno u jezgri i u korisničkom načinu rada, vrijeme nastanka
 - pregled učitanih modula i DLL-ova odabranog procesa: naziv, bazna adresa,
   veličina i putanja
-- osvježavanje podataka svake sekunde, uz mogućnost isključivanja
+- osvježavanje podataka svake 3 sekunde, uz mogućnost isključivanja
 - prekid odabranog procesa, zajedno sa svim procesima koje je pokrenuo, uz
   potvrdu korisnika
 
@@ -38,7 +40,7 @@ aplikacija se pokreće, ali podaci o sistemskim procesima ostaju nepotpuni.
 
 Nakon pokretanja otvaraju se tri kartice: **Procesi**, **Dretve** i **Moduli**.
 Kartice su stalno otvorene i ne mogu se zatvoriti, a sve tri prikazuju podatke
-iz istog očitanja, koje se osvježava svake sekunde.
+iz istog očitanja, koje se osvježava svake 3 sekunde.
 
 U kartici **Procesi**:
 
@@ -52,7 +54,7 @@ U kartici **Procesi**:
 Naredbe na Ribbon traci:
 
 - **Osvježi** – ručno očitavanje trenutnog stanja sustava
-- **Automatski (1 s)** – uključuje ili isključuje osvježavanje u stvarnom
+- **Automatski (3 s)** – uključuje ili isključuje osvježavanje u stvarnom
   vremenu; isključivanje je korisno kad se popis pregledava ili sortira
 - **Stablo procesa** – prebacuje između hijerarhijskog i ravnog popisa
 - **Prekini proces** – prekida odabrani proces nakon potvrde

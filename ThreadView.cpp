@@ -119,7 +119,7 @@ void CThreadView::FillList()
     if (topIndex > 0 && topIndex < list.GetItemCount())
         list.EnsureVisible(topIndex, FALSE);
 
-    list.RedrawWindow(NULL, NULL,
+    list.RedrawWindow(nullptr, nullptr,
                       RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
                       RDW_ALLCHILDREN | RDW_UPDATENOW);
 }

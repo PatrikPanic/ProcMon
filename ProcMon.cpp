@@ -24,7 +24,7 @@ END_MESSAGE_MAP()
 CProcMonApp theApp;
 
 CProcMonApp::CProcMonApp()
-    : m_pProcessTemplate(NULL), m_pThreadTemplate(NULL), m_pModuleTemplate(NULL)
+    : m_pProcessTemplate(nullptr), m_pThreadTemplate(nullptr), m_pModuleTemplate(nullptr)
 {
     SetAppID(_T("Vsite.ProcMon.1"));
 }
@@ -60,7 +60,7 @@ BOOL CProcMonApp::InitInstance()
         RUNTIME_CLASS(CProcMonDoc),
         RUNTIME_CLASS(CChildFrame),
         RUNTIME_CLASS(CProcessView));
-    if (m_pProcessTemplate == NULL)
+    if (m_pProcessTemplate == nullptr)
         return FALSE;
     AddDocTemplate(m_pProcessTemplate);
 
@@ -79,7 +79,7 @@ BOOL CProcMonApp::InitInstance()
         RUNTIME_CLASS(CModuleView));
 
     CMainFrame* pMainFrame = new CMainFrame;
-    if (pMainFrame == NULL || !pMainFrame->LoadFrame(IDR_MAINFRAME))
+    if (pMainFrame == nullptr || !pMainFrame->LoadFrame(IDR_MAINFRAME))
     {
         delete pMainFrame;
         return FALSE;
@@ -88,8 +88,8 @@ BOOL CProcMonApp::InitInstance()
 
     // Aplikacija ne otvara datoteke, nego odmah prikazuje stanje sustava.
     // S dokumentom nastaje i prva kartica, ona s popisom procesa.
-    CDocument* pDoc = m_pProcessTemplate->OpenDocumentFile(NULL);
-    if (pDoc == NULL)
+    CDocument* pDoc = m_pProcessTemplate->OpenDocumentFile(nullptr);
+    if (pDoc == nullptr)
         return FALSE;
 
     CMDIChildWnd* pProcessFrame = pMainFrame->MDIGetActive();
@@ -99,7 +99,7 @@ BOOL CProcMonApp::InitInstance()
 
     // Nakon otvaranja aktivna je zadnja kartica, pa se odabir vraca na popis
     // procesa jer se iz njega upravlja ostalim prikazima.
-    if (pProcessFrame != NULL)
+    if (pProcessFrame != nullptr)
         pProcessFrame->MDIActivate();
 
     pMainFrame->ShowWindow(SW_SHOWMAXIMIZED);
@@ -110,11 +110,11 @@ BOOL CProcMonApp::InitInstance()
 
 void CProcMonApp::CreateAdditionalView(CMultiDocTemplate* pTemplate, CDocument* pDoc)
 {
-    if (pTemplate == NULL || pDoc == NULL)
+    if (pTemplate == nullptr || pDoc == nullptr)
         return;
 
-    CFrameWnd* pFrame = pTemplate->CreateNewFrame(pDoc, NULL);
-    if (pFrame != NULL)
+    CFrameWnd* pFrame = pTemplate->CreateNewFrame(pDoc, nullptr);
+    if (pFrame != nullptr)
         pTemplate->InitialUpdateFrame(pFrame, pDoc);
 }
 
@@ -124,8 +124,8 @@ int CProcMonApp::ExitInstance()
     delete m_pThreadTemplate;
     delete m_pModuleTemplate;
 
-    m_pThreadTemplate = NULL;
-    m_pModuleTemplate = NULL;
+    m_pThreadTemplate = nullptr;
+    m_pModuleTemplate = nullptr;
 
     return CWinAppEx::ExitInstance();
 }
